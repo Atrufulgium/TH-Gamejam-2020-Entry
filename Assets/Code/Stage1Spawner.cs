@@ -30,6 +30,8 @@ public class Stage1Spawner : MonoBehaviour {
     public int delay = 0;
 
     void Update() {
+        if (GameData.Paused)
+            return;
         delay--;
         if (delay <= 0) {
             // spawn a structure and have at least enough delay for that one to end

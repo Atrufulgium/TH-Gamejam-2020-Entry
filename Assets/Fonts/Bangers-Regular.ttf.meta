@@ -3,7 +3,7 @@ guid: 1654d1db022260448b7c35d95833da93
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
-  fontSize: 120
+  fontSize: 140
   forceTextureCase: -2
   characterSpacing: 0
   characterPadding: 1
@@ -11,6 +11,7 @@ TrueTypeFontImporter:
   fontName: Bangers
   fontNames:
   - Bangers
+  - KosugiMaru
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

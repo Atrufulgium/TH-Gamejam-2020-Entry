@@ -21,6 +21,8 @@ public class Deco : MonoBehaviour {
     }
 
     private void Update() {
+        if (GameData.Paused)
+            return;
         if (w.warping && !previousWarp) {
             Select();
             w.Delay = Random.Range(0, 30);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Movement : MonoBehaviour {
 
@@ -25,6 +26,9 @@ public class Movement : MonoBehaviour {
     int downtime = 0; //Ik heb geen downtime want gamejam :(
     bool wasFromSlide = false;
 
+    bool fakePush;
+    bool inLevel3;
+
     bool previousGrounded = false;
 
     float jumpStart;
@@ -32,6 +36,7 @@ public class Movement : MonoBehaviour {
 
     ComboText OtterC;
     ComboText EagleC;
+    int hits = 0;
 
     // imagine, knowing that unity's animator is a state machine and this effort
     // is *probably* not necessary.
@@ -46,6 +51,8 @@ public class Movement : MonoBehaviour {
     string[] airborneStates = { "Jump", "Freefall", "DiagAttack" };
 
     void Start() {
+        EverythingMoves.MoveSpeed = GameData.DefaultSpeed;
+        Score.PlayerScore = 0;
         Player = this;
         OtterC = ComboText.ComboTexts["Otter"];
         EagleC = ComboText.ComboTexts["Eagle"];
@@ -59,11 +66,27 @@ public class Movement : MonoBehaviour {
         if (Shards.shards != null)
             Shards.shards.Clear();
         Shards.Generate(200);
+        if (AudioManager.manager != null)
+            AudioManager.PlayMusic();
+        GameData.Paused = true;
+        hits = 0;
+        inLevel3 = SceneManager.GetActiveScene().name == "Stage 3";
     }
-    
+
     void Update() {
+        if (GameData.Paused) {
+            if (anim.speed == 1)
+                anim.speed = 0;
+            return;
+        }
+        if (anim.speed == 0)
+            anim.speed = 1;
         EverythingMoves.MoveSpeed += 0.0000230f;
-        currentClip = anim.GetCurrentAnimatorClipInfo(animIndex)[0].clip.name;
+        if (anim.GetCurrentAnimatorClipInfoCount(animIndex) != 0)
+            currentClip = anim.GetCurrentAnimatorClipInfo(animIndex)[0].clip.name;
+
+        if (Input.GetKeyDown(KeyCode.R))
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
         // Check from both sides
         bool grounded = CheckGround(0.3f);
@@ -166,6 +189,7 @@ public class Movement : MonoBehaviour {
     void Jump() {
         jumpStart = t.position.y;
         rigidBody.AddForce(Vector2.up * JumpHeight, ForceMode2D.Impulse);
+        AudioManager.PlaySFX(SFX.Jump);
         anim.SetTrigger("Jump");
         anim.ResetTrigger("UnsafeLanding");
         anim.ResetTrigger("SafeLanding");
@@ -175,6 +199,10 @@ public class Movement : MonoBehaviour {
     bool CheckGround(float dist) {
         return Physics2D.Raycast(t.position, Vector2.down, dist, groundMask).collider != null
             || Physics2D.Raycast((Vector2)t.position - new Vector2(0.4f, 0f), Vector2.down, dist, groundMask).collider != null;
+    }
+
+    bool CheckFront(float dist) {
+        return Physics2D.Raycast(t.position + Vector3.up * 0.1f, Vector2.right, dist, groundMask).collider != null;
     }
 
     public void GetHit() {
@@ -191,6 +219,23 @@ public class Movement : MonoBehaviour {
         Ghost.OtterCombo = 0;
         OtterC.StopCombo();
         EagleC.StopCombo();
+        AudioManager.PlaySFX(SFX.Die);
+        CameraFixer.Screenshake();
         GameData.PlayerDied = true;
+        hits++;
+        if (hits == 2) {
+            Pause.Die();
+            gameObject.SetActive(false);
+        }
+    }
+
+    private void LateUpdate() {
+        return;
+        Debug.Log("aaaa");
+        fakePush = CheckFront(0.05f);
+        if (fakePush && inLevel3) {
+            t.position += Vector3.left * EverythingMoves.MoveSpeed;
+            fakePush = false;
+        }
     }
 }

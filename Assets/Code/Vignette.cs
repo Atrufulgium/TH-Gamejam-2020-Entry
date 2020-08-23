@@ -24,10 +24,14 @@ public class Vignette : MonoBehaviour {
     }
 
     private void Update() {
+        if (GameData.Paused)
+            return;
         alphas.Clear();
     }
 
     private void LateUpdate() {
+        if (GameData.Paused)
+            return;
         if (alphas.Count > 0) {
             float max = alphas.Sum();
             c.a = Mathf.Clamp01(max);
@@ -51,6 +55,8 @@ public class Vignette : MonoBehaviour {
                 alpha = Mathf.SmoothStep(1, 0, (f - 0.25f) * 4/3f) * 0.3f;
             alphas.Add(alpha);
             progress++;
+            while (GameData.Paused)
+                yield return null;
             yield return null;
         }
         alphas.Add(0);

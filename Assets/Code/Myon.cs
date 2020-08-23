@@ -20,7 +20,7 @@ public class Myon : MonoBehaviour
     }
 
     IEnumerator DoMovement() {
-        while (Movement.Player == null)
+        while (Movement.Player == null || GameData.Paused)
             yield return null;
         Vector3 prevTarget = t.position;
         while (true) {
@@ -29,6 +29,8 @@ public class Myon : MonoBehaviour
             for (int i = 0; i < 60; i++) {
                 Vector3 pos = t.position;
                 t.position = 97.5f * pos / 100f + target * 1.5f / 100f + prevTarget / 100f;
+                while (GameData.Paused)
+                    yield return null;
                 yield return null;
             }
             prevTarget = target;
@@ -36,6 +38,8 @@ public class Myon : MonoBehaviour
     }
 
     private void Update() {
+        if (GameData.Paused)
+            return;
         if (GameData.PlayerDied) {
             StopAllCoroutines();
             GetComponent<EverythingMoves>().enabled = true;
@@ -45,6 +49,8 @@ public class Myon : MonoBehaviour
 
     IEnumerator Rip() {
         while (true) {
+            while (GameData.Paused)
+                yield return null;
             t.localScale -= Vector3.one * 0.01f;
             if (t.localScale.x < 0.05)
                 ActualRip();

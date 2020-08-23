@@ -18,6 +18,8 @@ public class EverythingMoves : MonoBehaviour {
     }
     
     void Update() {
+        if (GameData.Paused)
+            return;
         t.position += Vector3.left * MoveSpeed * ParallaxFactor;
     }
 

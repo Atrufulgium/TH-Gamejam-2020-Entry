@@ -23,6 +23,8 @@ public class Shards : MonoBehaviour {
     
     void Update() {
         if (!pooled) {
+            if (GameData.Paused)
+                return;
             if (t.position.sqrMagnitude < 150) {
                 t.Rotate(0, 0, angularVelocity);
                 t.position += velocity;
@@ -43,6 +45,7 @@ public class Shards : MonoBehaviour {
             Shards s = shards.Pop();
             s.t.position = new Vector3(pos.x, pos.y, 2);
             s.t.rotation = Quaternion.Euler(0, 0, Random.Range(0f, 360f));
+            s.t.localScale = new Vector3(Random.Range(0, 2) * 2 - 1, 1, 1);
             s.angularVelocity = Random.Range(0.5f, 1f + force) * (Random.Range(0,2) * 2 - 1);
             s.velocity = new Vector3(Random.Range(-2f, 2f), Random.Range(-2f, 2f), 0) * force / 60f;
             s.s.color = c;

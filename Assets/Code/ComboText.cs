@@ -60,6 +60,7 @@ public class ComboText : MonoBehaviour {
         StopAllCoroutines();
         coroutineCount = 0;
         sizes.Clear();
+        AudioManager.PlaySFX(SFX.ComboBreak);
         StartCoroutine(ripTheComboThing());
     }
 

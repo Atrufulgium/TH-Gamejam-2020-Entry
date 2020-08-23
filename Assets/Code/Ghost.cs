@@ -33,6 +33,8 @@ public class Ghost : MonoBehaviour {
     }
     
     void Update() {
+        if (GameData.Paused)
+            return;
         time++;
         t.rotation = Quaternion.Euler(0, 0, Mathf.Sin(time * 0.04f) * 20);
         if (GameData.PlayerDied && t.position.x > 11f)
@@ -48,6 +50,7 @@ public class Ghost : MonoBehaviour {
                 OtterC.StopCombo();
                 EagleC.StopCombo();
                 Shards.ExplodeAt(transform.position, Color.red, 3);
+                AudioManager.PlaySFX(SFX.GhostBad);
                 break;
             case Faction.Otter:
                 OtterCombo++;
@@ -58,6 +61,7 @@ public class Ghost : MonoBehaviour {
                 if (OtterCombo > 3)
                     OtterC.CreateComboText(OtterCombo);
                 Shards.ExplodeAt(transform.position, Color.green, 3);
+                AudioManager.PlaySFX(SFX.GhostGood);
                 break;
             case Faction.Eagle:
                 EagleCombo++;
@@ -68,6 +72,7 @@ public class Ghost : MonoBehaviour {
                 if (EagleCombo > 3)
                     EagleC.CreateComboText(EagleCombo);
                 Shards.ExplodeAt(transform.position, new Color(0.4f, 0, 0.5f), 3);
+                AudioManager.PlaySFX(SFX.GhostGood);
                 break;
         }
         Destroy(gameObject);

@@ -24,6 +24,8 @@ public class WrapAround : MonoBehaviour {
     }
     
     void Update() {
+        if (GameData.Paused)
+            return;
         if (!warping && r.bounds.min.x + extra < GameData.FieldL) {
             StartCoroutine(Warp());
         }
@@ -33,12 +35,16 @@ public class WrapAround : MonoBehaviour {
         warping = true;
         Vector3 p = t.position;
         for (int i = 0; i < Delay; i++) {
+            while (GameData.Paused)
+                yield return null;
             yield return null;
         }
         p.x += GameData.FieldWidth + extra;
         if (idontcare)
             p.x += extra;
         t.position = p;
+        while (GameData.Paused)
+            yield return null;
         yield return null; //not a gamejam if no shitty hacky solutions
         warping = false;
     }

@@ -13,6 +13,8 @@ public class MyonPiece : MonoBehaviour {
     }
     
     void Update() {
+        if (GameData.Paused)
+            return;
         t.localScale -= Vector3.one * 0.01f;
         if (GameData.PlayerDied)
             shouldRip = true;
